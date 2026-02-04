@@ -1,8 +1,10 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+
 import Button from "../components/Button";
 import GameDisplay from "../components/GameDisplay";
 import SettingsModal from "../components/SettingsModal";
+import GameDisplaySkeleton from "../components/GameDisplaySkeleton";
 import axios from "axios";
 import { gameData, gameDataRender } from "../lib/definitions";
 
@@ -10,18 +12,29 @@ export default function Home() {
   // States
   const [gameData, setGameData] = useState<gameData | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
   // UI States
   const [showSettings, setShowSettings] = useState(false);
   const [jumpInput, setJumpInput] = useState("");
-
   // Fetch game data from backend
+
   const fetchGameData = async () => {
-    try {
-      const res = await axios.get("http://localhost:4000/api/game-data");
-      setGameData(res.data);
-      setCurrentIndex(0);
-    } catch (error) {
-      console.error("Error fetching game data:", error);
+    let max_retry = 5;
+    setLoading(true);
+    for (let i = 1; i <= max_retry; i++) {
+      console.log("Fetch attempt:", i);
+      try {
+        const res = await axios.get("http://localhost:4000/api/game-data");
+        setGameData(res.data);
+        setCurrentIndex(0);
+        setLoading(false);
+        return;
+      } catch (error) {
+        if (i < max_retry) {
+          console.log("Retrying to fetch game data... Attempt:", i + 1);
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        } else console.error("Error fetching game data:", error);
+      }
     }
   };
 
@@ -74,6 +87,9 @@ export default function Home() {
 
   const renderDisplayContent = () => {
     const currentData = gameData?.sequence[currentIndex];
+    if (loading || !gameData) {
+      return <GameDisplaySkeleton />;
+    }
     if (currentData) {
       if (currentIndex == gameData.sequence.length - 1) {
         return <GameDisplay currentData={currentData} image="/nabeatu1.png" />;
@@ -172,7 +188,7 @@ export default function Home() {
       {showSettings && (
         <SettingsModal
           onClose={() => setShowSettings(false)}
-          onSaveSuccess={fetchGameData} 
+          onSaveSuccess={fetchGameData}
           currentConfig={gameData?.config}
         />
       )}

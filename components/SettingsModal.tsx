@@ -69,11 +69,11 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 
       setFormData((prev) => ({
         ...prev,
-        [fieldName]: fileUrl, 
+        [fieldName]: fileUrl,
       }));
     } catch (error) {
       console.error("Upload error:", error);
-      alert("Lỗi upload file!");
+      alert("EError uploading file!");
     }
   };
   //------------------------------------------------//
@@ -99,14 +99,25 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
       alert("Magic word is missed!");
       return;
     }
-    try {
-      await axios.put("http://localhost:4000/api/settings", formData);
-      alert("Settings Saved!");
-      onSaveSuccess();
-      onClose();
-    } catch (error) {
-      console.error(error);
-      alert("Error saving settings!");
+
+    const max_retry = 5;
+    for (let i = 1; i <= max_retry; i++) {
+      console.log("Save attempt:", i);
+      try {
+        await axios.put("http://localhost:4000/api/settings", formData);
+        alert("Settings Saved!");
+        onSaveSuccess();
+        onClose();
+        return;
+      } catch (error) {
+        if (i < max_retry) {
+          console.log("Retrying to save settings... Attempt:", i + 1);
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        } else {
+          console.error(error);
+          alert("Error saving settings!");
+        }
+      }
     }
   };
 
