@@ -2,6 +2,7 @@
 import React from "react";
 import { gameDataRender } from "../lib/definitions";
 
+
 const GameDisplay: React.FC<{
   currentData: gameDataRender;
   image?: string;

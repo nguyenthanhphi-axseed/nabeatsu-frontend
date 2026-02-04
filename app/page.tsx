@@ -7,6 +7,7 @@ import SettingsModal from "../components/SettingsModal";
 import GameDisplaySkeleton from "../components/GameDisplaySkeleton";
 import axios from "axios";
 import { gameData, gameDataRender } from "../lib/definitions";
+import { Profile } from "@/components/Profile";
 
 export default function Home() {
   // States
@@ -184,6 +185,7 @@ export default function Home() {
             </button>
           </div>
         </div>
+        <Profile />
       </div>
 
       {showSettings && (

@@ -1,10 +1,10 @@
 "use client";
 import { useLiff } from '@/components/LiffProvider';
-import { Profile } from "@liff/get-profile";
+import type { Profile as LiffProfile } from "@liff/get-profile";
 import { useState, useEffect } from "react";
 
 export function Profile() {
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [profile, setProfile] = useState<LiffProfile | null>(null);
   const { liff } = useLiff();
 
   useEffect(() => {
