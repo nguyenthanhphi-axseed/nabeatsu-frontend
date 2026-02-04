@@ -17,6 +17,7 @@ export default function Home() {
   const [showSettings, setShowSettings] = useState(false);
   const [jumpInput, setJumpInput] = useState("");
   // Fetch game data from backend
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   const fetchGameData = async () => {
     let max_retry = 5;
@@ -24,7 +25,7 @@ export default function Home() {
     for (let i = 1; i <= max_retry; i++) {
       console.log("Fetch attempt:", i);
       try {
-        const res = await axios.get("http://localhost:4000/api/game-data");
+        const res = await axios.get(`${API_URL}/api/game-data`);
         setGameData(res.data);
         setCurrentIndex(0);
         setLoading(false);

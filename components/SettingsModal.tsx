@@ -55,11 +55,11 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     // 1. Prepare send file
     const uploadData = new FormData();
     uploadData.append("file", file);
-
+    const API_URL = process.env.NEXT_PUBLIC_API_URL;
     try {
       // 2. Backend API upload file
       const res = await axios.post(
-        "http://localhost:4000/api/upload",
+        `${API_URL}/api/upload`,
         uploadData,
       );
 
@@ -101,10 +101,11 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     }
 
     const max_retry = 5;
+    const API_URL = process.env.NEXT_PUBLIC_API_URL;
     for (let i = 1; i <= max_retry; i++) {
       console.log("Save attempt:", i);
       try {
-        await axios.put("http://localhost:4000/api/settings", formData);
+        await axios.put(`${API_URL}/api/settings`, formData);
         alert("Settings Saved!");
         onSaveSuccess();
         onClose();
