@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios"; // Nhớ cài: npm install axios
+import axios from "axios";
 import Button from "./Button";
 
 interface SettingsModalProps {
@@ -73,7 +73,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
       }));
     } catch (error) {
       console.error("Upload error:", error);
-      alert("EError uploading file!");
+      alert("Error uploading file!");
     }
   };
   //------------------------------------------------//
