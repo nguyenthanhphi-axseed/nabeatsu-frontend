@@ -9,6 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@fontsource/gloria-hallelujah": "^5.2.8",
+    "axios": "^1.13.4",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3"

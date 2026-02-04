@@ -1,65 +1,181 @@
-import Image from "next/image";
+"use client";
+import React, { useEffect, useState } from "react";
+import Button from "../components/Button";
+import GameDisplay from "../components/GameDisplay";
+import SettingsModal from "../components/SettingsModal";
+import axios from "axios";
+import { gameData, gameDataRender } from "../lib/definitions";
 
 export default function Home() {
+  // States
+  const [gameData, setGameData] = useState<gameData | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  // UI States
+  const [showSettings, setShowSettings] = useState(false);
+  const [jumpInput, setJumpInput] = useState("");
+
+  // Fetch game data from backend
+  const fetchGameData = async () => {
+    try {
+      const res = await axios.get("http://localhost:4000/api/game-data");
+      setGameData(res.data);
+      setCurrentIndex(0);
+    } catch (error) {
+      console.error("Error fetching game data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchGameData();
+  }, []);
+
+  const isFinished = gameData && currentIndex === gameData.sequence.length - 1;
+  const targetNum = parseInt(jumpInput);
+  const startNum = gameData?.config?.start || 0;
+  const endNum = gameData?.config?.end || 0;
+  const isValidJump =
+    !isNaN(targetNum) &&
+    jumpInput !== "" &&
+    targetNum >= startNum &&
+    targetNum <= endNum;
+
+  const handleNext = () => {
+    if (!gameData || isFinished) return;
+    if (gameData && currentIndex < gameData.sequence.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    }
+  };
+
+  const handlePrev = () => {
+    if (!gameData || isFinished) return;
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    }
+  };
+
+  const handleJump = () => {
+    if (!gameData || isFinished) return;
+    const startNum = gameData.config.start;
+    const endNum = gameData.config.end;
+    const targetNum = parseInt(jumpInput, 10);
+    if (targetNum >= startNum && targetNum <= endNum) {
+      const targetIndex = gameData.sequence.findIndex(
+        (item: gameDataRender) => item.value == targetNum,
+      );
+      setJumpInput("");
+      setCurrentIndex(targetIndex);
+    }
+  };
+
+  const handleRestart = () => {
+    setCurrentIndex(0);
+    setJumpInput("");
+  };
+
+  const renderDisplayContent = () => {
+    const currentData = gameData?.sequence[currentIndex];
+    if (currentData) {
+      if (currentIndex == gameData.sequence.length - 1) {
+        return <GameDisplay currentData={currentData} image="/nabeatu1.png" />;
+      }
+      if (currentData.is_aho) {
+        return <GameDisplay currentData={currentData} image="/nabeatu3.png" />;
+      }
+      return <GameDisplay currentData={currentData} image="/nabeatu2.png" />;
+    }
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen bg-[url('/background.jpg')] bg-cover bg-center flex items-center justify-center">
+      {/* Main Game Container */}
+      <div className="w-[800px] h-[600px] opacity-90 bg-gray-100 border-2 border-gray-400 rounded-xl p-6 relative flex flex-col justify-between">
+        {/* Top Header */}
+        <div className="flex justify-between items-start">
+          <h1 className="text-2xl font-bold text-red-500">Nabeatsu Game</h1>
+          <Button
+            label="設定"
+            image="/settings-btn.png"
+            className=""
+            onClick={() => setShowSettings(true)}
+            disabled={isFinished ? true : false}
+          />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+
+        {/* Middle: Display Area */}
+        <div className="bg-[url('/game-container-bg.jpg')] bg-cover bg-center relative flex-1 my-6 border-1 border-yellow-400 flex items-center justify-center">
+          {renderDisplayContent()}
+        </div>
+
+        {/* --- BOTTOM CONTROLS (FIXED LAYOUT) --- */}
+        <div className="flex items-center justify-between px-2 relative h-16">
+          {/* Left: Empty Space (Flexible width) */}
+          <div className="flex-1">
+            {gameData && currentIndex == gameData.sequence.length - 1 && (
+              <Button
+                image="/restart-btn.png"
+                className=""
+                onClick={() => handleRestart()}
+              />
+            )}
+          </div>
+
+          {/* Center: Navigation Buttons */}
+          <div className="flex gap-4 justify-center w-auto mx-4">
+            <Button
+              label="<"
+              disabled={isFinished ? true : false}
+              onClick={() => handlePrev()}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <Button
+              label=">"
+              disabled={isFinished ? true : false}
+              onClick={() => handleNext()}
+            />
+          </div>
+
+          {/* Right: Jump Section (Flexible width + End alignment) */}
+          <div className="flex-1 flex items-center justify-end gap-2">
+            {/* Label: Prevent text wrapping */}
+            <span className="text-gray-700 font-medium whitespace-nowrap">
+              No.指定:
+            </span>
+
+            {/* Input Box */}
+            <input
+              type="text"
+              className="w-12 h-10 border border-gray-500 p-1 text-center bg-white"
+              value={jumpInput}
+              onChange={(e) => {
+                if (!isFinished) setJumpInput(e.target.value);
+              }}
+              placeholder="No."
+            />
+
+            {/* Jump Button */}
+            <button
+              onClick={handleJump}
+              disabled={!isValidJump}
+              className={`px-3 py-1 h-10 border rounded shadow text-sm leading-tight whitespace-nowrap transition-colors
+                ${
+                  isValidJump
+                    ? "bg-yellow-200 hover:bg-yellow-300 text-black border-gray-400 cursor-pointer"
+                    : "bg-gray-300 text-gray-500 border-gray-300 cursor-not-allowed"
+                }
+              `}
+            >
+              ジャンプ
+            </button>
+          </div>
         </div>
-      </main>
+      </div>
+
+      {showSettings && (
+        <SettingsModal
+          onClose={() => setShowSettings(false)}
+          onSaveSuccess={fetchGameData} 
+          currentConfig={gameData?.config}
+        />
+      )}
     </div>
   );
 }
