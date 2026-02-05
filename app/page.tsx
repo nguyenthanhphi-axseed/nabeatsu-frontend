@@ -106,7 +106,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[url('/background.jpg')] bg-cover bg-center flex flex-col items-center justify-center">
       {/* Main Game Container */}
-      <div className="w-[95%] md:w-[800px] min-h-[50vh] md:h-[600px] opacity-90 bg-gray-100 border-2 border-gray-400 rounded-xl p-6 relative flex flex-col justify-between">
+      <div className="w-[95%] md:w-[800px] min-h-[65vh] md:h-[600px] opacity-90 bg-gray-100 border-2 border-gray-400 rounded-xl p-6 relative flex flex-col justify-between">
         {/* Top Header */}
         <div className="flex justify-between items-start">
           <h1 className="text-2xl font-bold text-red-500">Nabeatsu Game</h1>
