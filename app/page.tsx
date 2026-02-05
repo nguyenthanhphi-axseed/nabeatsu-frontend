@@ -186,7 +186,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="mt-2 bg-gray-100"><Profile /></div>  
+      <div className="mt-2 bg-gray-100 p-5"><Profile /></div>  
         
 
       {showSettings && (

@@ -12,6 +12,7 @@ export function Profile() {
       (async () => {
         const profile = await liff.getProfile();
         setProfile(profile);
+        console.log("Profile Data:", profile);
       })();
     }
   }, [liff]);
@@ -20,11 +21,12 @@ export function Profile() {
     <div>
       {profile && (
         <>
-          {/* eslint-disable-next-line @next/next/no-img-element */},
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={profile.pictureUrl}
             alt="profile"
             className="rounded-full w-20 h-20 mx-auto mb-4"
+            referrerPolicy="no-referrer"
           />
           <p className="text-center font-bold text-xl">
             userId: {profile.userId}
