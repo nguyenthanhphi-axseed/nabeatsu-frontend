@@ -185,8 +185,9 @@ export default function Home() {
             </button>
           </div>
         </div>
-        <Profile />
       </div>
+      <div className="mt-2 bg-gray-100"><Profile /></div>  
+        
 
       {showSettings && (
         <SettingsModal
