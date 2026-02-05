@@ -185,6 +185,7 @@ export default function Home() {
             </button>
           </div>
         </div>
+        <Profile />
       </div>
 
       {showSettings && (
@@ -194,7 +195,7 @@ export default function Home() {
           currentConfig={gameData?.config}
         />
       )}
-      <Profile />
+      
     </div>
   );
 }
