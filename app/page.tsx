@@ -194,7 +194,7 @@ export default function Home() {
           currentConfig={gameData?.config}
         />
       )}
-      {/* <Profile /> */}
+      <Profile />
     </div>
   );
 }
