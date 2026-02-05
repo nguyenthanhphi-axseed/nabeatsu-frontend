@@ -10,7 +10,7 @@ const GameDisplay: React.FC<{
   return (
     <>
       {!currentData.assets.image && (
-        <img src={image} className="absolute w-60 h-61 -bottom-2" alt="" />
+        <img src={image} className="absolute w-50 h-50 md:w-60 md:h-61 -bottom-2" alt="" />
       )}
 
       <span
